@@ -1,0 +1,29 @@
+<head>
+  <title>comeback</title>
+</head>
+
+<body>
+  <div class="container-fluid">
+    {{> encoding_job}}
+  </div>
+</body>
+
+<template name="encoding_job">
+  <h1>FFmpeg Encoding Test…</h1>
+  <form class="form-inline">
+    <input id="input_file" type="text" value="~/input_foo.mp4" placeholder="input file"></input>
+    <input id="output_file" type="text" value="~/output_foo.mp4" placeholder="output file"></input>    
+    <input id="output_length" type="text" value="100" placeholder="length"></input>    
+    <input type="button" id="create-job" class="btn btn-primary" value="Submit Encoding Job" />
+  </form>
+  <ul>
+  {{#each job}}
+    <li>
+      {{status}} {{input_file}}: {{progress}}%
+      <div class="progress">
+        <div class="bar bar-success" style="width: {{progress}}%;"></div>
+      </div>
+    </li>
+  {{/each}}
+  </ul>
+</template>
