@@ -18,7 +18,7 @@ if Meteor.isServer
     require = __meteor_bootstrap__.require
     child_process = require 'child_process'
     fs = require 'fs'
-    kue = require('kue')
+    kue = require('/home/besu/code/kue')
     jobs = kue.createQueue();    
 
     Meteor.methods
@@ -30,6 +30,7 @@ if Meteor.isServer
           input_file: input_file
           output_file: output_file
           output_length: output_length
+          presets: ["desktop-mp4-360p"]
         .save( (err) ->
           Fiber ->
             Jobs.update({_id: job.data.job_id}, {$set: {queue_id: job.id }})        
@@ -37,12 +38,13 @@ if Meteor.isServer
         )
         .on 'progress', (progress) ->
           console.log "progress #{progress}"
-          if progress == 0
-            status = "inspecting"
-          else
-            status = "encoding"
           Fiber ->
-            Jobs.update({_id: job.data.job_id}, {$set: {status: status, duration: job.data.duration, progress: progress}})
+            Jobs.update({_id: job.data.job_id}, {$set: {duration: job.data.duration, progress: progress}})
+          .run()
+        .on 'step', (step) ->
+          console.log step
+          Fiber ->
+            Jobs.update({_id: job.data.job_id}, {$set: {status: step}})
           .run()
         
       jobs.on 'job complete', (id) ->
